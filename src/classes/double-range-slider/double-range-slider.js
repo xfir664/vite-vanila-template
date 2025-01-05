@@ -60,7 +60,6 @@ export default class DoubleRangeSlider {
     let max = parseInt(this.maxNumberInput.value);
 
     if (input.classList.contains("number-input")) {
-      // Проверка на пересечение и gap
       if (max - min < this.gap) {
         if (input.classList.contains("input-min")) {
           min = max - this.gap;
@@ -71,7 +70,6 @@ export default class DoubleRangeSlider {
         }
       }
 
-      // Обновляем значения диапазона
       this.minRangeInput.value = min;
       this.maxRangeInput.value = max;
     } else if (input.classList.contains("range-input")) {
@@ -88,12 +86,10 @@ export default class DoubleRangeSlider {
         }
       }
 
-      // Обновляем значения числовых инпутов
       this.minNumberInput.value = rangeMin;
       this.maxNumberInput.value = rangeMax;
     }
 
-    // Обновляем прогресс
     this.#updateProgress();
   }
 
