@@ -3,55 +3,81 @@ import "./double-range-slider.css";
 export default class DoubleRangeSlider {
   constructor(selector, settings = {}) {
     const mainSelector = document.querySelector(selector);
-    if (mainSelector) {
-      this.minNumberInput = mainSelector.querySelector(".input-min");
-      this.maxNumberInput = mainSelector.querySelector(".input-max");
-      this.minRangeInput = mainSelector.querySelector(".range-min");
-      this.maxRangeInput = mainSelector.querySelector(".range-max");
-      this.rangeBar = mainSelector.querySelector(".range-progress");
-      this.#initRangeSlider();
-    }
+    if (!mainSelector) return;
 
-    this.minValue = settings.minValue || 0;
-    this.maxValue = settings.maxValue || 100;
-    this.step = settings.step || 1;
+    this.minNumberInput = mainSelector.querySelector(".input-min");
+    this.maxNumberInput = mainSelector.querySelector(".input-max");
+    this.minRangeInput = mainSelector.querySelector(".range-min");
+    this.maxRangeInput = mainSelector.querySelector(".range-max");
+    this.rangeBar = mainSelector.querySelector(".range-progress");
+
+    this.minValue = this.#getAttributeValue(
+      this.minNumberInput,
+      "min",
+      settings.minValue,
+      0
+    );
+    this.maxValue = this.#getAttributeValue(
+      this.maxNumberInput,
+      "max",
+      settings.maxValue,
+      100
+    );
+    this.step = this.#getAttributeValue(
+      this.minNumberInput,
+      "step",
+      settings.step,
+      1
+    );
     this.gap = settings.gap || 0;
 
-    this.#addSettings(this.minNumberInput);
-    this.#addSettings(this.maxNumberInput);
-    this.#addSettings(this.minRangeInput);
-    this.#addSettings(this.maxRangeInput);
+    this.#initializeInputs();
+    this.#initRangeSlider();
   }
 
-  #addSettings(input) {
-    if (input) {
-      input.min = this.minValue;
-      input.max = this.maxValue;
-      input.step = this.step;
+  #getAttributeValue(input, attr, settingValue, defaultValue) {
+    const value = input.getAttribute(attr);
+    return value !== null
+      ? parseFloat(value)
+      : settingValue !== undefined
+      ? settingValue
+      : defaultValue;
+  }
 
-      input.classList.contains("input-min") ||
-      input.classList.contains("range-min")
-        ? (input.value = this.minValue)
-        : "";
-      input.classList.contains("input-max") ||
-      input.classList.contains("range-max")
-        ? (input.value = this.maxValue)
-        : "";
-    }
+  #initializeInputs() {
+    const inputs = [
+      this.minNumberInput,
+      this.maxNumberInput,
+      this.minRangeInput,
+      this.maxRangeInput,
+    ];
+
+    inputs.forEach((input) => {
+      if (input) {
+        input.min = input.getAttribute("min") || this.minValue;
+        input.max = input.getAttribute("max") || this.maxValue;
+        input.step = input.getAttribute("step") || this.step;
+        input.value =
+          input.classList.contains("input-min") ||
+          input.classList.contains("range-min")
+            ? input.min || this.minValue
+            : input.max || this.maxValue;
+      }
+    });
   }
 
   #initRangeSlider() {
-    this.minNumberInput.addEventListener("input", (evt) => {
-      this.#updateRangeBar(evt.target);
-    });
-    this.maxNumberInput.addEventListener("input", (evt) => {
-      this.#updateRangeBar(evt.target);
-    });
-    this.minRangeInput.addEventListener("input", (evt) => {
-      this.#updateRangeBar(evt.target);
-    });
-    this.maxRangeInput.addEventListener("input", (evt) => {
-      this.#updateRangeBar(evt.target);
+    const inputs = [
+      this.minNumberInput,
+      this.maxNumberInput,
+      this.minRangeInput,
+      this.maxRangeInput,
+    ];
+
+    inputs.forEach((input) => {
+      input.addEventListener("input", (evt) => {
+        this.#updateRangeBar(evt.target);
+      });
     });
   }
 
@@ -59,33 +85,33 @@ export default class DoubleRangeSlider {
     let min = parseInt(this.minNumberInput.value);
     let max = parseInt(this.maxNumberInput.value);
 
-    if (input.classList.contains("number-input")) {
+    if (this.#isNumberInput(input)) {
       if (max - min < this.gap) {
+        input.classList.contains("input-min")
+          ? (min = max - this.gap)
+          : (max = min + this.gap);
         if (input.classList.contains("input-min")) {
-          min = max - this.gap;
           this.minNumberInput.value = min;
         } else {
-          max = min + this.gap;
           this.maxNumberInput.value = max;
         }
       }
-
       this.minRangeInput.value = min;
       this.maxRangeInput.value = max;
-    } else if (input.classList.contains("range-input")) {
+    } else if (this.#isRangeInput(input)) {
       let rangeMin = parseInt(this.minRangeInput.value);
       let rangeMax = parseInt(this.maxRangeInput.value);
 
       if (rangeMax - rangeMin < this.gap) {
+        input.classList.contains("range-min")
+          ? (rangeMin = rangeMax - this.gap)
+          : (rangeMax = rangeMin + this.gap);
         if (input.classList.contains("range-min")) {
-          rangeMin = rangeMax - this.gap;
           this.minRangeInput.value = rangeMin;
         } else {
-          rangeMax = rangeMin + this.gap;
           this.maxRangeInput.value = rangeMax;
         }
       }
-
       this.minNumberInput.value = rangeMin;
       this.maxNumberInput.value = rangeMax;
     }
@@ -93,23 +119,30 @@ export default class DoubleRangeSlider {
     this.#updateProgress();
   }
 
+  #isNumberInput(input) {
+    return input.classList.contains("number-input");
+  }
+
+  #isRangeInput(input) {
+    return input.classList.contains("range-input");
+  }
+
   #updateProgress() {
-    if (this.rangeBar) {
-      const min = parseInt(this.minRangeInput.value);
-      const max = parseInt(this.maxRangeInput.value);
+    if (!this.rangeBar) return;
 
-      const percentMin =
-        ((min - parseInt(this.minRangeInput.min)) /
-          (this.maxValue - parseInt(this.minRangeInput.min))) *
-        100;
+    const min = parseInt(this.minRangeInput.value);
+    const max = parseInt(this.maxRangeInput.value);
 
-      const percentMax =
-        ((max - parseInt(this.maxRangeInput.min)) /
-          (this.maxValue - parseInt(this.maxRangeInput.min))) *
-        100;
+    const percentMin =
+      ((min - parseInt(this.minRangeInput.min)) /
+        (this.maxValue - parseInt(this.minRangeInput.min))) *
+      100;
+    const percentMax =
+      ((max - parseInt(this.maxRangeInput.min)) /
+        (this.maxValue - parseInt(this.maxRangeInput.min))) *
+      100;
 
-      this.rangeBar.style.left = `${percentMin}%`;
-      this.rangeBar.style.right = `${100 - percentMax}%`;
-    }
+    this.rangeBar.style.left = `${percentMin}%`;
+    this.rangeBar.style.right = `${100 - percentMax}%`;
   }
 }

@@ -18,7 +18,19 @@ body {
 
 .double-range-wrapper {
   background-color: #fff;
+  margin: 10px;
   padding: 10px;
   border-radius: 10px;
   max-width: 300px;
+}
+
+.new-accordion {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  max-width: 300px;
+  margin: 10px;
+  padding: 10px;
+  background-color: #fff;
+  border-radius: 5px;
 }
