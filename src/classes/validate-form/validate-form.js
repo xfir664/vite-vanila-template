@@ -46,7 +46,7 @@ export default class ValidateForm {
     } else {
       if (input.value.length < 2 || input.value.length > 40) {
         isValid = false;
-        errorMessage = setting.errorMessage || this.defaultMessage;
+        errorMessage = setting ? setting.errorMessage : this.defaultMessage;
       }
     }
 

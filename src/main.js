@@ -15,7 +15,6 @@ const accordion = new initAccordion(".new-accordion", {
   openAll: false,
 });
 
-// Инициализация класса с настройками
 const form = new ValidateForm(".new-form-validate", {
   defaultMessage: "Неправильно",
   inputSetingsArr: [
@@ -30,9 +29,4 @@ const form = new ValidateForm(".new-form-validate", {
       regExp: /^\+7\d{10}$/,
     },
   ],
-});
-
-document.querySelector(".validate-form").addEventListener("submit", (evt) => {
-  evt.preventDefault();
-  console.log("loh");
 });
