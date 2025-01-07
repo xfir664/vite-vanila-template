@@ -16,6 +16,7 @@ const accordion = new initAccordion(".new-accordion", {
 });
 
 const form = new ValidateForm(".new-form-validate", {
+  errorClass: 'error',
   defaultMessage: "Неправильно",
   inputSetingsArr: [
     {

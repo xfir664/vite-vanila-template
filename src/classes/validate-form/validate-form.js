@@ -60,14 +60,18 @@ export default class ValidateForm {
 
   showErrorMessage(input, message) {
     const errorDiv = document.createElement("div");
-    errorDiv.className = "error-message";
+    errorDiv.className = this.settings.errorClass || "error-message";
     errorDiv.textContent = message;
 
     input.parentNode.insertBefore(errorDiv, input.nextSibling);
   }
 
   removeErrorMessage(input) {
-    const existingError = input.parentNode.querySelector(".error-message");
+    const existingError = input.parentNode.querySelector(
+      this.settings.errorClass
+        ? `.${this.settings.errorClass}`
+        : ".error-message"
+    );
     if (existingError) {
       existingError.remove();
     }
