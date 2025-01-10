@@ -44,7 +44,7 @@ export default class ValidateForm {
       isValid = setting.regExp.test(input.value);
       errorMessage = isValid ? "" : setting.errorMessage || this.defaultMessage;
     } else {
-      if (input.value.length < 2 || input.value.length > 40) {
+      if (input.value.trim().length < 2 || input.value.trim().length > 40) {
         isValid = false;
         errorMessage = setting ? setting.errorMessage : this.defaultMessage;
       }
@@ -86,7 +86,9 @@ export default class ValidateForm {
       if (setting && setting.regExp) {
         return setting.regExp.test(input.value);
       } else {
-        return input.value.length >= 2 && input.value.length <= 40;
+        return (
+          input.value.trim().length >= 2 && input.value.trim().length <= 40
+        );
       }
     });
 
