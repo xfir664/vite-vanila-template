@@ -1,33 +1,27 @@
-import DoubleRangeSlider from "./classes/double-range-slider/double-range-slider";
-import initAccordion from "./classes/accordion/accordion";
-import ValidateForm from "./classes/validate-form/validate-form";
+const scripts = []; // Массив для хранения функций из модулей
 
-const rangeDouble = new DoubleRangeSlider(".double-range-wrapper", {
-  minValue: 100,
-  maxValue: 1000,
-  step: 10,
-  gap: 100,
-});
+// Импортируем все модули из папки modules
+const modules = import.meta.glob("./modules/*.js");
 
-const accordion = new initAccordion(".new-accordion", {
-  btnActiveText: "Open",
-  btnInActiveText: "Close",
-  openAll: false,
-});
+// Асинхронная функция для загрузки модулей
+async function loadModules() {
+  // Перебираем все модули
+  for (const modulePath in modules) {
+    // Импортируем модуль
+    const module = await modules[modulePath]();
 
-const form = new ValidateForm(".new-form-validate", {
-  errorClass: "error",
-  defaultMessage: "Неправильно",
-  inputSetingsArr: [
-    {
-      selector: "email-input",
-      errorMessage: "Неверный формат email",
-      regExp: null,
-    },
-    {
-      selector: "phone-input",
-      errorMessage: "Неправильный телефон",
-      regExp: /^\+7\d{10}$/,
-    },
-  ],
-});
+    // Перебираем все функции в модуле
+    Object.values(module).forEach((func) => {
+      // Проверяем, является ли функция
+      if (typeof func === "function") {
+        // Добавляем функцию в массив
+        scripts.push(func);
+      }
+    });
+  }
+  // Выполняем все функции из массива
+  scripts.forEach((script) => script());
+}
+
+// Вызываем функцию загрузки модулей
+loadModules();
