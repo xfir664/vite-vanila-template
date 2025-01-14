@@ -25,3 +25,18 @@ async function loadModules() {
 
 // Вызываем функцию загрузки модулей
 loadModules();
+
+const obj = {
+  method: function ss() {
+    console.log("method called");
+  },
+  values: "value",
+};
+
+class MyClass {
+  values = "value";
+
+  ss() {
+    console.log("method called");
+  }
+}
