@@ -1,3 +1,5 @@
+import "./react/init-react";
+
 const scripts = []; // Массив для хранения функций из модулей
 
 // Импортируем все модули из папки modules
@@ -25,18 +27,3 @@ async function loadModules() {
 
 // Вызываем функцию загрузки модулей
 loadModules();
-
-const obj = {
-  method: function ss() {
-    console.log("method called");
-  },
-  values: "value",
-};
-
-class MyClass {
-  values = "value";
-
-  ss() {
-    console.log("method called");
-  }
-}

@@ -58,3 +58,10 @@ body {
   background-color: #fff;
   border-radius: 5px;
 }
+
+.btn-tab {
+  border: 1px solid teal;
+  padding: 5px 10px;
+  border-radius: 5px;
+  background: none;
+}
